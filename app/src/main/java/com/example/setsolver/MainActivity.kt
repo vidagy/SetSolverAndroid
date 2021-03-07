@@ -9,6 +9,7 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.setsolver.detection.BoardDetection
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.*
 import org.opencv.core.Mat
@@ -108,13 +109,12 @@ class MainActivity : Activity(), CameraBridgeViewBase.CvCameraViewListener2 {
     override fun onCameraFrame(frame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         // get current camera frame as OpenCV Mat object
         val mat = frame.rgba()
+        val boardDetection = BoardDetection(mat)
+        val cards = boardDetection.extractCardsFromBoard()
+        Log.i(TAG, "We found " + cards.size.toString() + " cards")
 
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGRA)
-
-        val matCopy = mat.clone()
-        Imgproc.Canny(mat, matCopy, 80.0, 90.0)
         // return processed frame for live preview
-        return mat
+        return boardDetection.image
     }
 
     companion object {
