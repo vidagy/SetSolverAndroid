@@ -10,6 +10,7 @@
 //import android.widget.Toast
 //import androidx.core.app.ActivityCompat
 //import com.example.setsolver.detection.BoardDetection
+//import com.example.setsolver.detection.CardDetection
 //import org.opencv.android.CameraBridgeViewBase
 //import org.opencv.android.*
 //import org.opencv.core.Mat
@@ -111,8 +112,14 @@
 //        val mat = frame.rgba()
 //        val boardDetection = BoardDetection(mat)
 //        val cards = boardDetection.extractCardsFromBoard()
-//        Log.i(TAG, "We found " + cards.size.toString() + " cards")
+//        for (card in cards) {
+//            val cardDetection = CardDetection(card)
+//            val color = cardDetection.getColor()
+//            Log.i(TAG, "First card's color is:$color")
+//        }
 //
+//
+//        Log.i(TAG, "We found " + cards.size.toString() + " cards")
 //        // return processed frame for live preview
 //        return boardDetection.image
 //    }

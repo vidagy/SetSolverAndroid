@@ -44,7 +44,7 @@ class BoardTestData {
             Card(Fill.FULL, Count.TWO, Color.GREEN, Shape.OVAL),
             Card(Fill.EMPTY, Count.ONE, Color.PURPLE, Shape.DIAMOND),
             Card(Fill.EMPTY, Count.ONE, Color.GREEN, Shape.DIAMOND),
-            Card(Fill.EMPTY, Count.ONE, Color.GREEN, Shape.DIAMOND),
+            Card(Fill.EMPTY, Count.ONE, Color.GREEN, Shape.OVAL),
             Card(Fill.FULL, Count.ONE, Color.PURPLE, Shape.WAVE),
             Card(Fill.FULL, Count.ONE, Color.RED, Shape.DIAMOND)
     ))

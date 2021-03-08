@@ -24,7 +24,7 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
     }
 
     fun preProcessBoard(img: Mat) {
-        val kernel = Mat.ones(5, 5, CvType.CV_8UC1)
+        val kernel = Mat.ones(20, 20, CvType.CV_8UC1)
         val tmp1 = Mat()
         Imgproc.morphologyEx(img, tmp1, Imgproc.MORPH_OPEN, kernel);
         val tmp2 = Mat()
