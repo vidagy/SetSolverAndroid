@@ -55,13 +55,13 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
             cnt.toList().size == 4
         }
         val contoursToPlot = contours.map{ c -> MatOfPoint(*c.toArray()) }
-        Imgproc.drawContours(image, contoursToPlot, -1, Scalar(0.0, 0.0, 255.0))
+        // Imgproc.drawContours(image, contoursToPlot, -1, Scalar(0.0, 0.0, 255.0))
 
         val cards = contours.map { cnt ->
             fourPointTransform(cnt)
         }.map { card ->
             val dst = Mat()
-            if (card.size().width > card.size().height) {
+            if (card.size().height > card.size().width) {
                 Imgproc.resize(card, dst, Size(400.0, 600.0))
             } else {
                 Imgproc.resize(card, dst, Size(600.0, 400.0))

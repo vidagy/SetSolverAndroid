@@ -9,10 +9,8 @@ import org.opencv.core.Mat
 import org.opencv.imgcodecs.Imgcodecs
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.opencv.imgproc.Imgproc
 
-
-class BoardDetectionTest {
-}
 
 @RunWith(value = Parameterized::class)
 class TestBoardRecognition(
@@ -29,8 +27,12 @@ class TestBoardRecognition(
     fun testNumberOfCardsFound() {
         val matrix: Mat = Imgcodecs.imread(filePath)
         val board = BoardDetection(matrix)
-        val res = board.extractCardsFromBoard()
-        Assert.assertEquals(size, res.size)}
+        val cards = board.extractCardsFromBoard()
+        val cardPath = "src/test/java/com/example/setsolver/cards/"
+        cards.forEachIndexed{i, card ->
+            Imgcodecs.imwrite( cardPath +filePath.substringAfterLast("/").substringBeforeLast(".") + "_" + i.toString() + ".jpg", card)
+        }
+        Assert.assertEquals(size, cards.size)}
 
     companion object {
         @JvmStatic
