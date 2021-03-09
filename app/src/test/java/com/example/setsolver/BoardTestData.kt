@@ -108,7 +108,7 @@ class BoardTestData {
             11 to Card(Fill.STRIPED, Count.THREE, Color.RED, Shape.OVAL),
             12 to Card(Fill.FULL, Count.ONE, Color.PURPLE, Shape.WAVE),
             13 to Card(Fill.STRIPED, Count.TWO, Color.RED, Shape.DIAMOND),
-            14 to Card(Fill.FULL, Count.THREE, Color.RED, Shape.DIAMOND),
+            14 to Card(Fill.FULL, Count.THREE, Color.RED, Shape.DIAMOND)
     )
     val board7 = mapOf(
             0 to Card(Fill.EMPTY, Count.TWO, Color.PURPLE, Shape.WAVE),
@@ -231,7 +231,7 @@ class BoardTestData {
             998 to Card(Fill.EMPTY, Count.THREE, Color.GREEN, Shape.OVAL),
             1 to Card(Fill.EMPTY, Count.TWO, Color.PURPLE, Shape.DIAMOND),
             999 to Card(Fill.EMPTY, Count.ONE, Color.RED, Shape.DIAMOND),
-            0 to Card(Fill.EMPTY, Count.TWO, Color.GREEN, Shape.OVAL)
+            0 to Card(Fill.EMPTY, Count.THREE, Color.GREEN, Shape.OVAL)
     )
     val board16 = mapOf(
             11 to Card(Fill.EMPTY, Count.THREE, Color.GREEN, Shape.WAVE),

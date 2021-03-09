@@ -33,6 +33,37 @@ class CardDetectionTest(
             assertEquals(expectedCard.color, color)}
     }
 
+    @Test
+    fun testCountCard() {
+        val file = File(filepath)
+        if (file.exists()){
+            val mat = Imgcodecs.imread(filepath)
+            val cardDetection = CardDetection(mat)
+            val count = cardDetection.getCard().count
+            assertEquals(expectedCard.count, count)}
+    }
+
+    @Test
+    fun testShapeCard() {
+        val file = File(filepath)
+        if (file.exists()){
+            val mat = Imgcodecs.imread(filepath)
+            val cardDetection = CardDetection(mat)
+            val shape = cardDetection.getCard().shape
+            assertEquals(expectedCard.shape, shape)}
+    }
+
+
+    @Test
+    fun testFillCard() {
+        val file = File(filepath)
+        if (file.exists()){
+            val mat = Imgcodecs.imread(filepath)
+            val cardDetection = CardDetection(mat)
+            val fill = cardDetection.getCard().fill
+            assertEquals(expectedCard.fill, fill)}
+    }
+
     companion object {
         @JvmStatic
         @Parameterized.Parameters(name = "{index}: Card Recognition for color({0}) expected ({1})")
