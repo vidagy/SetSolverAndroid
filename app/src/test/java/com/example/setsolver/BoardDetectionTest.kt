@@ -40,10 +40,9 @@ class TestBoardRecognition(
         fun data(): Iterable<Array<Any>>{
             return BoardTestData().allBoards.map { (file, value) ->
                 val file_path = "src/test/java/com/example/setsolver/board_input/" + file
-                val sizeOfBoard = value.cards.size
+                val sizeOfBoard = value.size
                 arrayOf(file_path, sizeOfBoard)
             }.toList()
-
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.setsolver.detection
 
 import android.util.Log
-import com.example.setsolver.game.Color
+import com.example.setsolver.game.*
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import java.util.Collections.max
@@ -9,6 +9,11 @@ import java.util.Collections.max
 class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val preprocessed: Mat = Mat()) {
     init {
         preProcessCard()
+    }
+
+    fun getCard(): Card {
+        val color = getColor()
+        return Card(Fill.EMPTY, Count.ONE, color, Shape.DIAMOND)
     }
 
     fun getColor(): Color {

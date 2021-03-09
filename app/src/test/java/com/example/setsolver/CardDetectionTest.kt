@@ -1,32 +1,65 @@
 package com.example.setsolver
 
 import com.example.setsolver.detection.CardDetection
+import com.example.setsolver.game.Card
 import com.example.setsolver.game.Color
 import junit.framework.Assert.assertEquals
-import org.junit.Assert
 import org.junit.Test
 import org.opencv.core.Core
-import org.opencv.core.Mat
 import org.opencv.imgcodecs.Imgcodecs
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.io.File
 
 
-
-class CardDetectionTest{
+@RunWith(value = Parameterized::class)
+class CardDetectionTest(
+        private val filepath: String,
+        private val expectedCard: Card
+) {
     init {
-        // OpenCVLoader.initDebug();
+        // OpenCVLoader.initDebug(); //for android
         nu.pattern.OpenCV.loadShared()
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
+
     @Test
-    fun testColoronCard(){
-        val path = "src/test/java/com/example/setsolver/cards/set_board0_11.jpg"
-        val mat = Imgcodecs.imread(path)
-        val card = CardDetection(mat)
-        val color = card.getColor()
-        assertEquals(color, Color.RED)
+    fun testColorCard() {
+        val file = File(filepath)
+        if (file.exists()){
+            val mat = Imgcodecs.imread(filepath)
+            val cardDetection = CardDetection(mat)
+            val color = cardDetection.getCard().color
+            assertEquals(expectedCard.color, color)}
     }
+
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{index}: Card Recognition for color({0}) expected ({1})")
+        fun data(): Iterable<Array<Any>> {
+            val pathPattern = BoardTestData().allBoards.flatMap { (boardName, board) ->
+                val myPath = "src/test/java/com/example/setsolver/cards/" +
+                        boardName.substringBeforeLast(".") + "_"
+                val pairs = board.map{ (num, cardEntry) ->
+                    val completePath = myPath + num.toString() + ".jpg"
+                    val expectedCard = cardEntry
+                    val completePair = arrayOf(completePath, expectedCard)
+                    completePair
+                }
+                pairs
+            }
+            return pathPattern
+
+
+//            return TestCardData().allBoards.mapKeys{(boardName, board) ->
+//                val fullPath = "src/test/java/com/example/setsolver/cards/" +
+//                                boardName.substringBeforeLast(".") + "_"
+//                fullPath}.mapValues{ (fullPath, board) ->
+//                val completePath = fullPath + board.keys
+//                board.fo
+//
+//            }
+        }
+    }
+
 }
