@@ -9,7 +9,11 @@ import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.sqrt
 
-class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val preprocessed: Mat = Mat(), var shapeContours: Set<MatOfPoint> = setOf()) {
+class CardDetection(val img: Mat) {
+    val preprocessedForShade: Mat = Mat()
+    val preprocessed: Mat = Mat()
+    var shapeContours: Set<MatOfPoint> = setOf()
+
     init {
         preProcessCard()
     }

@@ -13,7 +13,7 @@ import org.opencv.imgproc.Imgproc
 
 
 @RunWith(value = Parameterized::class)
-class TestBoardRecognition(
+class BoardDetectionTest(
         private val filePath: String,
         private val size: Int) {
 

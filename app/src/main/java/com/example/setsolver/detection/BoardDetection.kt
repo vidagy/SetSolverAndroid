@@ -2,12 +2,14 @@ package com.example.setsolver.detection
 
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
-import java.util.stream.Collectors.toList
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val threshold: Mat = Mat()) {
+class BoardDetection(val image: Mat) {
+    val preProcessedImage: Mat = Mat()
+    val threshold: Mat = Mat()
+
     init {
         preProcessBoard(image)
     }
@@ -26,7 +28,7 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
     fun preProcessBoard(img: Mat) {
         val kernel = Mat.ones(20, 20, CvType.CV_8UC1)
         val tmp1 = Mat()
-        Imgproc.morphologyEx(img, tmp1, Imgproc.MORPH_OPEN, kernel);
+        Imgproc.morphologyEx(img, tmp1, Imgproc.MORPH_OPEN, kernel)
         val tmp2 = Mat()
         Imgproc.cvtColor(tmp1, tmp2, Imgproc.COLOR_BGR2Lab)
         val tmp3 = adjustGamma(tmp2, 0.75)
@@ -41,10 +43,10 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
         val hierarchy = Mat()
         Imgproc.findContours(threshold, rawContours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE)
 
-        val max_area = preProcessedImage.size().area() * 0.9
-        val min_area = preProcessedImage.size().area() * 0.005
+        val maxArea = preProcessedImage.size().area() * 0.9
+        val minArea = preProcessedImage.size().area() * 0.005
         val contours = rawContours.filter { x ->
-            max_area > Imgproc.contourArea(x) && Imgproc.contourArea(x) > min_area
+            maxArea > Imgproc.contourArea(x) && Imgproc.contourArea(x) > minArea
         }.map { x ->
             val contour = MatOfPoint2f(*x.toArray())
             val epsilon = Imgproc.arcLength(contour, true) * 0.1
@@ -54,10 +56,10 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
         }.filter { cnt ->
             cnt.toList().size == 4
         }
-        val contoursToPlot = contours.map{ c -> MatOfPoint(*c.toArray()) }
+        // val contoursToPlot = contours.map{ c -> MatOfPoint(*c.toArray()) }
         // Imgproc.drawContours(image, contoursToPlot, -1, Scalar(0.0, 0.0, 255.0))
 
-        val cards = contours.map { cnt ->
+        return contours.map { cnt ->
             fourPointTransform(cnt)
         }.map { card ->
             val dst = Mat()
@@ -68,8 +70,6 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
             }
             dst
         }
-
-        return cards
     }
 
     data class Contour(val tl: Point, val tr: Point, val br: Point, val bl: Point)
@@ -104,9 +104,9 @@ class BoardDetection(val image: Mat, val preProcessedImage: Mat = Mat(), val thr
                 Point(maxWidth - 1, maxHeight - 1),
                 Point(0.0, maxHeight - 1)
         ))
-        val M = Imgproc.getPerspectiveTransform(src, dst)
+        val m = Imgproc.getPerspectiveTransform(src, dst)
         val res = Mat()
-        Imgproc.warpPerspective(image, res, M, Size(maxWidth, maxHeight))
+        Imgproc.warpPerspective(image, res, m, Size(maxWidth, maxHeight))
         return res
     }
 }
