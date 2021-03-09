@@ -7,10 +7,9 @@ import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import kotlin.math.abs
 import kotlin.math.log10
-import kotlin.math.min
 import kotlin.math.sqrt
 
-class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val preprocessed: Mat = Mat(), var shapeContours: Set<MatOfPoint> = setOf<MatOfPoint>()) {
+class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val preprocessed: Mat = Mat(), var shapeContours: Set<MatOfPoint> = setOf()) {
     init {
         preProcessCard()
     }
@@ -36,22 +35,21 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
                         Scalar(58.0, 37.0, 120.0), Scalar(100.0, 100.0, 230.0))
         )
 
-        val intenseColor = colors.mapValues { (_, range) ->
+        return colors.mapValues { (_, range) ->
             val mask = Mat()
             Core.inRange(img, range[0], range[1], mask)
             mask
         }.mapValues { (_, mask) ->
-            val masked_mat = Mat()
-            Core.bitwise_and(img, img, masked_mat, mask)
-            masked_mat
+            val maskedMat = Mat()
+            Core.bitwise_and(img, img, maskedMat, mask)
+            maskedMat
         }.mapValues { (_, masked_mat) ->
             // val TotalNumberOfPixels = img.rows() * img.cols()
-            val grey_mat = Mat()
-            Imgproc.cvtColor(masked_mat, grey_mat, Imgproc.COLOR_BGR2GRAY)
-            val NonZeroPixels = Core.countNonZero(grey_mat)
-            NonZeroPixels
+            val greyMat = Mat()
+            Imgproc.cvtColor(masked_mat, greyMat, Imgproc.COLOR_BGR2GRAY)
+            val nonZeroPixels = Core.countNonZero(greyMat)
+            nonZeroPixels
         }.maxBy { (_, NonZeroPixels) -> NonZeroPixels }!!.key
-        return intenseColor
     }
 
     fun preProcessCard() {
@@ -59,21 +57,21 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
         Imgproc.cvtColor(img, grey, Imgproc.COLOR_BGR2GRAY)
         val clache = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
         clache.apply(grey, preprocessedForShade)
-        val rgb_planes = mutableListOf<Mat>()
-        Core.split(preprocessedForShade, rgb_planes)
-        val resultNormPlanes = rgb_planes.map { plane ->
+        val rgbPlanes = mutableListOf<Mat>()
+        Core.split(preprocessedForShade, rgbPlanes)
+        val resultNormPlanes = rgbPlanes.map { plane ->
             val dilated = Mat()
             Imgproc.dilate(plane, dilated, Mat.ones(7, 7, CvType.CV_8UC1))
-            val bg_img = Mat()
-            Imgproc.medianBlur(dilated, bg_img, 21)
+            val bgImg = Mat()
+            Imgproc.medianBlur(dilated, bgImg, 21)
             val diffImg = Mat()
-            Core.absdiff(plane, bg_img, diffImg)
+            Core.absdiff(plane, bgImg, diffImg)
             val white = diffImg.clone()
             white.setTo(Scalar(255.0))
-            val diffImg_2 = Mat()
-            Core.absdiff(white, diffImg, diffImg_2)
+            val diffImg2 = Mat()
+            Core.absdiff(white, diffImg, diffImg2)
             val normImg = Mat()
-            Core.normalize(diffImg_2, normImg, 0.0, 255.0, Core.NORM_MINMAX, CvType.CV_8UC1)
+            Core.normalize(diffImg2, normImg, 0.0, 255.0, Core.NORM_MINMAX, CvType.CV_8UC1)
             normImg
         }
         val merged = Mat()
@@ -92,8 +90,8 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
         val threshold = Mat()
         Imgproc.threshold(preprocessed, threshold, 0.0, 255.0, Imgproc.THRESH_OTSU + Imgproc.THRESH_BINARY)
         val rawContours = mutableListOf<MatOfPoint>()
-        val _hierarchy = Mat()
-        Imgproc.findContours(threshold, rawContours, _hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
+        val hierarchy = Mat()
+        Imgproc.findContours(threshold, rawContours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
         val coordinates = rawContours.filter { cnt ->
             val area = Imgproc.contourArea(cnt)
             area > minArea && area < maxArea
@@ -122,7 +120,7 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
     }
 
     fun getShape(): Shape {
-        if (!shapeContours.isEmpty()) {
+        if (shapeContours.isNotEmpty()) {
             val cont = shapeContours.toList()[0]
             val contour = MatOfPoint2f(*cont.toArray())
             val epsilon = Imgproc.arcLength(contour, true) * 0.01
@@ -148,17 +146,17 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
     }
 
     fun getFill(): Fill {
-        if (!shapeContours.isEmpty()) {
+        if (shapeContours.isNotEmpty()) {
             val kernel = Mat(3, 3, CvType.CV_32F)
-            kernel.put(0, 0, *doubleArrayOf(-1.0))
-            kernel.put(0, 1, *doubleArrayOf(-1.0))
-            kernel.put(0, 2, *doubleArrayOf(-1.0))
-            kernel.put(1, 0, *doubleArrayOf(-1.0))
-            kernel.put(1, 1, *doubleArrayOf(9.0))
-            kernel.put(1, 2, *doubleArrayOf(-1.0))
-            kernel.put(2, 0, *doubleArrayOf(-1.0))
-            kernel.put(2, 1, *doubleArrayOf(-1.0))
-            kernel.put(2, 2, *doubleArrayOf(-1.0))
+            kernel.put(0, 0, -1.0)
+            kernel.put(0, 1, -1.0)
+            kernel.put(0, 2, -1.0)
+            kernel.put(1, 0, -1.0)
+            kernel.put(1, 1, 9.0)
+            kernel.put(1, 2, -1.0)
+            kernel.put(2, 0, -1.0)
+            kernel.put(2, 1, -1.0)
+            kernel.put(2, 2, -1.0)
             val dest = Mat()
             Imgproc.filter2D(img, dest, -1, kernel)
             val shapeColor = shapeContours.map { cnt ->
@@ -176,14 +174,14 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
                 arrayOf(color.`val`[0], color.`val`[1], color.`val`[2]).average()
             }.min()!!
 
-            val edge_x = 30
-            val edge_y = 30
-            val top_edge_x = edge_x - 20
-            val top_edge_y = edge_y - 20
-            val bottom_edge_x = edge_x + 20
-            val bottom_edge_y = edge_y + 20
+            val edgeX = 30
+            val edgeY = 30
+            val topEdgeX = edgeX - 20
+            val topEdgeY = edgeY - 20
+            val bottomEdgeX = edgeX + 20
+            val bottomEdgeY = edgeY + 20
 
-            val edge = img.submat(top_edge_y, bottom_edge_y, top_edge_x, bottom_edge_x)
+            val edge = img.submat(topEdgeY, bottomEdgeY, topEdgeX, bottomEdgeX)
             val edgeAvg = Core.mean(edge)
             val minedge = arrayOf(edgeAvg.`val`[0], edgeAvg.`val`[1], edgeAvg.`val`[2]).average()
             val diff = abs(minedge - shapeColor)
@@ -197,6 +195,4 @@ class CardDetection(val img: Mat, val preprocessedForShade: Mat = Mat(), val pre
         }
         return Fill.STRIPED
     }
-
-
 }
